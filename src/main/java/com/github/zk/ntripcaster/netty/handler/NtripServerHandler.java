@@ -1,0 +1,179 @@
+package com.github.zk.ntripcaster.netty.handler;
+
+import com.github.zk.ntripcaster.enums.ResponseCodeV1Enum;
+import com.github.zk.ntripcaster.model.NtripRequest;
+import com.github.zk.ntripcaster.protocol.SourceTableProcessor;
+import com.github.zk.ntripcaster.topic.NtripTopicManager;
+import com.github.zk.ntripcaster.util.Base64Util;
+import com.github.zk.ntripcaster.util.SystemUtil;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Stream;
+
+/**
+ * Ntrip Caster 的核心业务处理器
+ * <p>
+ * 注意: 此 Handler 必须是 prototype 作用域, 因为它为每个连接保存了状态.
+ *
+ * @author zhaokai
+ * @since 1.0
+ */
+@Component
+@Scope("prototype")
+// @ChannelHandler.Sharable // 此 Handler 有状态, 不能被共享
+public class NtripServerHandler extends ChannelInboundHandlerAdapter {
+
+    private final Logger logger = LoggerFactory.getLogger(NtripServerHandler.class);
+
+    private final NtripTopicManager ntripTopicManager;
+    private final SourceTableProcessor sourceTableProcessor;
+
+    /**
+     * 标记当前连接是否已经注册为一个NtripServer(数据源).
+     * 这是此Handler需要是prototype作用域的核心原因.
+     */
+    private boolean isNtripServerRegistered = false;
+
+    public NtripServerHandler(NtripTopicManager ntripTopicManager, SourceTableProcessor sourceTableProcessor) {
+        this.ntripTopicManager = ntripTopicManager;
+        this.sourceTableProcessor = sourceTableProcessor;
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        logger.info("客户端已连接: {}", ctx.channel().remoteAddress());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        logger.info("客户端已断开: {}", ctx.channel().remoteAddress());
+        // 通知Topic管理器,清理此channel关联的所有资源(订阅或发布)
+        ntripTopicManager.onClientDisconnect(ctx.channel());
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (msg instanceof NtripRequest request) {
+            // --- 这是来自解码器的、结构化的初始请求 ---
+            handleInitialRequest(ctx, request);
+        } else if (msg instanceof byte[] data) {
+            // --- 这是后续的二进制数据流 ---
+            handleDataStream(ctx, data);
+        } else {
+            // --- 未知的消息类型 ---
+            logger.warn("收到未知的消息类型: {}", msg.getClass().getName());
+            try {
+                super.channelRead(ctx, msg);
+            } catch (Exception e) {
+                logger.error("处理未知消息类型时发生异常", e);
+                ctx.close();
+            }
+        }
+    }
+
+    private void handleInitialRequest(ChannelHandlerContext ctx, NtripRequest request) {
+        String method = request.method();
+        String mountPoint = request.mountpoint();
+        String authorization = request.authorization();
+
+        // NtripClient (订阅者) 请求
+        if ("GET".equalsIgnoreCase(method)) {
+            // 当挂载点为空时,表示请求SourceTable
+            if (mountPoint.isEmpty()) {
+                handleSourceTableRequest(ctx);
+            } else {
+                // 验证用户
+                if (!ObjectUtils.isEmpty(authorization) && validatePassword(authorization)) {
+                    handleSubscriptionRequest(ctx, mountPoint);
+                } else {
+                    ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.UNAUTHORIZED.getText(), StandardCharsets.UTF_8));
+                }
+            }
+        }
+
+        // NtripServer (数据源) 注册
+        if ("SOURCE".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+            // 验证用户
+            if (!ObjectUtils.isEmpty(authorization) && validatePassword(authorization)) {
+                ntripTopicManager.registerNtripServer(mountPoint, ctx.channel());
+                // 标记此连接为已注册的NtripServer
+                this.isNtripServerRegistered = true;
+                ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.OK.getText(), StandardCharsets.UTF_8));
+                logger.info("NtripServer {} 注册到主题: {}", ctx.channel().remoteAddress(), mountPoint);
+            } else {
+                ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.UNAUTHORIZED.getText(), StandardCharsets.UTF_8));
+            }
+        } else {
+            // 未知的请求方法
+            logger.warn("收到来自 {} 的未知请求方法 '{}',即将关闭连接.", ctx.channel().remoteAddress(), method);
+            ctx.writeAndFlush(Unpooled.copiedBuffer("ERROR - Bad Request\r\n", StandardCharsets.UTF_8))
+                    .addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    /**
+     * 验证密码
+     *
+     * @param authorization base64编码后的密码
+     * @return 密码是否正确
+     */
+    private boolean validatePassword(String authorization) {
+        String userAndPassword = Base64Util.decode(authorization);
+        //读取配置的用户名密码
+        try {
+            return Files.lines(Paths.get(SystemUtil.ntripConfigPath() + "user.txt"))
+                    .anyMatch(s -> s.equals(userAndPassword));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleSourceTableRequest(ChannelHandlerContext ctx) {
+        logger.info("NtripClient {} 请求SourceTable", ctx.channel().remoteAddress());
+        String sourceTable = sourceTableProcessor.bulidSourceTable();
+        // 发送数据后关闭连接,这是SourceTable请求的典型处理方式
+        ctx.writeAndFlush(Unpooled.copiedBuffer(sourceTable, StandardCharsets.US_ASCII));
+    }
+
+    private void handleSubscriptionRequest(ChannelHandlerContext ctx, String mountPoint) {
+        ntripTopicManager.subscribe(mountPoint, ctx.channel());
+        ctx.writeAndFlush(Unpooled.copiedBuffer("ICY 200 OK\r\n\r\n", StandardCharsets.US_ASCII));
+        logger.info("NtripClient {} 订阅主题: {}", ctx.channel().remoteAddress(), mountPoint);
+    }
+
+    private void handleDataStream(ChannelHandlerContext ctx, byte[] data) {
+        // 只有已注册的NtripServer(数据源)才能发送数据流
+        if (isNtripServerRegistered) {
+            String topic = ntripTopicManager.getTopicForNtripServer(ctx.channel());
+            if (topic != null) {
+                ntripTopicManager.publish(topic, data);
+            }
+        } else {
+            // NtripClient或未注册的客户端在初始请求后发送了数据,这是不规范的
+            logger.warn("收到来自非NtripServer {} 的意外数据流,即将关闭连接.", ctx.channel().remoteAddress());
+            ctx.close();
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error("连接 {} 发生异常", ctx.channel().remoteAddress(), cause);
+        ctx.close();
+    }
+
+}

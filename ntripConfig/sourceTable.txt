@@ -1,0 +1,58 @@
+CAS;129.217.182.51;80;EUREF;BKG;0;DEU;51.5;7.5;http://igs.ifag.de/index_ntrip_cast.htm 
+CAS;62.159.109.248;8080;Trimble GPSNet;Trimble Terrasat;1;DEU;48.03;11.72;http://www.virtualrtk.com 
+NET;EUREF;EUREF;B;N;http://www.epncb.oma.be/euref_IP;http://www.epncb.oma.be/euref_IP;http://www.epncb.oma.be/projects/euref_IP/NtripRegister.html;none 
+NET;IGS;BKG;B;N;http://igscb.jpl.nasa.gov/;none;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;GREF;BKG;B;N;http://igs.ifag.de/gref_realtime.htm;http://igs.ifag.de/root_ftp/misc/ntrip/streamlist.htm;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;ascos;Ruhrgas AG;B;N;http://www.ascos.de;none;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;SCIGN-OCRT;SOPAC,CSRC;B;N;http://www.scign.org;none;ybock@ucsd.edu;none 
+NET;CORS;NGS;B;N;http://www.ngs.noaa.gov/CORS;http://igs.ifag.de/root_ftp/misc/ntrip/streamlist.htm;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;Misc;BKG;B;N;http://igs.ifag.de/root_ftp/misc/ntrip/streamlist.htm;none;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;EGNOS;BKG;B;N;http://igs.ifag.de/root_ftp/misc/ntrip/streamlist.htm;none;http://igs.ifag.de/root_ftp/software/NtripRegister.doc;none 
+NET;OmniSTAR;BKG;B;Y;http://www.omnistar.nl;http://www.omnistar.nl/graphs.asp;http://www.omnistar.nl/purchase.asp;Test and Evaluation only 
+STR;FFMJ2;Frankfurt;RTCM 2.1;1(1),3(19),16(59);0;GPS;GREF;DEU;50.12;8.68;0;1;GPSNet V2.10;none;N;N;560;Demo 
+STR;FFMJ1;Frankfurt;RTCM 2.2;3(19),16(59),18(1),19(1);2;GPS;GREF;DEU;50.09;8.66;0;0;GPSNet V1.9;none;N;N;2800;Demo 
+STR;FFMT0;Frankfurt;RTCM 2.0;1(3),2(90),3(90),16(90);0;GPS;Misc;DEU;50.09;8.66;0;0;Trimble 4000SSI;none;N;N;190;ALF Demo 
+STR;CONZ0;Concepcion-TIGO;RAW;Compact(1);2;GPS+GLO;IGS;CHL;-36.84;286.98;0;0;Javad Legacy E;none;B;N;3600;none 
+STR;FFMJ0;Frankfurt;RAW;Compact(1);2;GPS+GLO;IGS;DEU;50.09;8.66;0;0;Javad Legacy E;none;N;N;3600;Demo 
+STR;LEIJ0;Leipzig;RAW;Compact(1);2;GPS+GLO;IGS;DEU;51.33;12.37;0;0;Javad Legacy E;none;B;N;3600;none  
+STR;LDBG0;Lindenberg;RAW;Compact(1);2;GPS+GLO;IGS;DEU;52.21;14.12;0;0;Javad Legacy E;none;B;N;3600;none 
+STR;MOXA0;Moxa;RAW;Compact(1);2;GPS+GLO;IGS;DEU;50.64;11.61;0;0;Javad Legacy E;none;B;N;3600;none 
+STR;MUEJ0;Muenchen;RAW;Compact(1);2;GPS+GLO;IGS;DEU;48.13;11.57;0;0;Javad Legacy E;none;B;N;3600;none 
+STR;WARN0;Warnemuende;RAW;Compact(1);2;GPS+GLO;IGS;DEU;54.17;12.10;0;0;Javad Legacy E;none;B;N;3600;none 
+STR;BARC0;Barcelona;RTCM 2.0;1(1),3(3),16(90);0;GPS;Misc;ESP;41.37;2.16;0;0;Novatel OEM3;none;B;N;230;ICC, Geod. Dep. 
+STR;BOCH0;Bochum;RTCM 2.1;1(1)3,16,18(1),19(1);2;GPS;Misc;DEU;50.45;7.27;0;0;none;none;B;N;13000;FH Bochum 
+STR;BRUS0;Brussels;RTCM 2.0;1(1),3(60),16;0;GPS;Misc;BEL;50.80;4.36;0;0;Ashtech UZ-12;none;B;N;500;ROB 
+STR;SP300;Ephemerides;SP3;ASCII, last 8 15min Epochs;0;GPS;Misc;FIN;60.10;24.50;0;1;IGS Ultra Rapid Orbit;none;B;N;5600;Finnish Geodetic Institute 
+STR;BUCU0;Bucharest;RTCM 2.0;1(1),3(60),16(60);0;GPS;EUREF;ROU;44.46;26.12;0;0;Ashtech Z-XII3;none;B;N;520;TU Bucharest 
+STR;CAGZ0;Cagliari;RTCM 2.1;1(3),3(60),16(60),18(1),19(1),31(3);2;GPS+GLO;EUREF;ITA;39.14;8.97;0;0;JPS Eurocard;none;B;N;3900;Univ Cagliari, DIST 
+STR;STEI0;Steinbrink;RAW;Compact(1);2;GPS+GLO;ascos;DEU;52.50;8.73;0;0;Javad Legacy E;none;B;N;3600;ALLSAT 
+STR;UMME0;Ummeln;RAW;Compact(1);2;GPS+GLO;ascos;DEU;51.98;8.46;0;0;Javad Legacy E;none;B;N;3600;ALLSAT 
+STR;HELS0;Helsinki;RTCA;Thales ASCII;1;EGNOS;Misc;FIN;60.10;24.50;0;0;Thales DG-16;none;B;N;700;Finnish Geodetic Institute 
+STR;HELS1;Helsinki;RTCM 3.0;1,2,3,6,9,16;0;GPS,EGNOS;Misc;FIN;60.10;24.50;0;0;Thales DG-16;none;B;N;700;Finnish Geodetic Institute 
+STR;HERT0;Hailsham;RTCM 2.2;1(1),3(60),18(1),19(1),22(60),31(1);2;GPS+GLO;EUREF;GBR;50.87;0.33;0;0;Ashtech Z18;none;B;N;5200;NERC 
+STR;KRAW0;Krakow;RTCM 2.2;1(1),3(60),16(60),18(1),19(1),22(60);2;GPS;EUREF;POL;50.01;19.92;0;0;Ashtech UZ-12;none;B;N;1900;AGH 
+STR;KOPE0;Koper;RTCM 2.1;1(5),3(69),20(1),21(1),22;2;GPS;Misc;SLO;48.40;17.03;0;0;none;none;B;N;2500;Harpha Sea 
+STR;GAVL0;Gavle;RTCM 2.3;1(1),3(19),16(59);0;GPS+GLO;Misc;SWE;60.67;17.14;0;0;Javad Legacy;none;B;N;800;National Land Survey Sweden 
+STR;MILU0;Milano;RTCM 2.1;1(1),3(60),16(60),18(1),19(1);2;GPS;Misc;ITA;45.48;9.23;0;0;Ashtech Z12;none;B;N;2800;University Milano, Agricultural Institute 
+STR;MADR0;Madrid;RTCM 2.1;1(1),3(10),16,18(1),19(1);2;GPS;Misc;ESP;40.44;356.29;0;0;Ashtech ZSensor;none;B;N;3300;IGNE, Serv. Geod. 
+STR;MALA0;Malaga;RTCM 2.0;1(1),2(1),3(30);0;GPS;Misc;ESP;36.73;355.61;0;0;Trimble 4000SSI;none;B;N;1200;IGNE, Serv. Geod. 
+STR;OBET0;Oberpfaffenhofen;RAW;MBEN/PBEN/SNAV/SALM(1);2;GPS;Misc;DEU;48.08;11.28;0;0;Ashtech Z12;none;B;N;8000;DLR 
+STR;PADO0;Padova;RTCM 2.1;1(1),3(10),16(30),18(1),19(1),59;2;GPS;IGS;ITA;45.41;11.90;0;0;Trimble 4000SSI;none;B;N;3600;Univ Padova 
+STR;MAT10;Matera;RTCM 2.1;3(60),16(60),18(1),19(1),22(60),36(1);2;GPS+GLO;IGS;ITA;40.65;16.70;0;0;Ashtech Z18;none;B;N;5600;Agenzia Spaziale Italiana 
+STR;GOPE0;Praha-Ondrejov;RTCM 2.2;1(1),3(60),16(60),18(1),19(1),22(60),31(1),36(1);2;GPS+GLO;EUREF;CZE;49.91;14.79;0;0;Ashtech Z18;none;B;N;5600;Uni Praha 
+STR;ROMA0;Roma;RTCM 2.1;1(1),3(10),18(1),19(1),59;2;GPS;Misc;ITA;42.00;12.50;0;0;Trimble 4000;none;B;N;3400;Univ Roma 
+STR;ROMG0;Roma;RTCM 2.1;9(1),34(1);0;GPS;Misc;ITA;42.00;12.50;0;0;Trimble 5700;none;B;N;500;Galileo Sistemi 
+STR;SYDN0;Sydney;RTCM 2.1;3(30),18(1),19(1);2;GPS;Misc;AUS;-33.92;151.23;0;0;Leica MC500;none;B;N;3200;University of New South Wales 
+STR;TORI0;Torino;RTCM 2.1;1(1),3(60),16(30),18(1),19(1);2;GPS;Misc;ITA;45.06;7.66;0;0;none;none;B;N;12000;Politecnico di Torino 
+STR;PENC0;Penc-RT;RTCM 2.0;1(1),3(10),22,59;0;GPS;EUREF;HUN;47.79;19.28;0;0;Trimble 5700;none;B;N;700;FOMI, SGO 
+STR;SZEK0;Szekesfehervar;RTCM 2.0;1(1),3(10);0;GPS;Misc;HUN;47.18;19.42;0;0;GPSBase;none;B;N;700;FOMI, SGO 
+STR;BERJ0;Berlin;RTCM 2.1;1(1),3(19),16(59);0;GPS;GREF;DEU;52.52;13.38;0;1;GPSNet V2.10;none;B;N;560;VRS 
+STR;DREJ1;Dresden;RTCM 2.1;1(1),3(19),16(59);0;GPS;GREF;DEU;51.05;13.73;0;1;GPSNet V2.10;none;B;N;560;VRS 
+STR;WILH0;Wilhelmshaven;RTCM 2.1;1(1),3(19),16(59);0;GPS;GREF;DEU;53.52;8.10;0;1;GPSNet V2.01;none;B;N;560;VRS 
+STR;LEID0;Leidschendam;RTCM 2.0;1(1);0;GPS;OmniSTAR;NLD;52.10;4.41;0;1;OmniSTAR;none;B;Y;120;EA-SAT Geostationary L-band Broadcast 
+STR;ERLA0;Erlanger;RTCM 2.2;3(60),18(1),19(1),22(60);2;GPS;CORS;USA;39.01;275.24;0;0;Ashtech Z-XII3;none;B;N;3000;http://ncad.net 
+STR;SBCC0;Mission-Viejo;RTCM 2.1;3(15),18(1),19(1),22(15),59(1);2;GPS;SCIGN-OCRT;USA-CA;33.55;242.34;0;0;Ashtech Z-XII3;none;B;N;4000;none 
+STR;SACY0;Santa-Ana;RTCM 2.1;3(15),18(1),19(1),22(15),59(1);2;GPS;SCIGN-OCRT;USA-CA;33.74;242.10;0;0;Ashtech Z-XII3;none;B;N;4000;none 
+STR;SBCC1;Mission-Viejo;RAW;MBEN(1);2;GPS;SCIGN-OCRT;USA-CA;33.55;242.34;0;0;Ashtech Z-XII3;none;B;N;7300;none 
+STR;SACY1;Santa-Ana;RAW;MBEN(1);2;GPS;SCIGN-OCRT;USA-CA;33.74;242.10;0;0;Ashtech Z-XII3;none;B;N;7300;none 
+STR;TIGO0;TIGO-TEST;RAW;PBEN(5),MBEN(5);2;GPS;Test;CHL;-36.84;286.98;0;0;Ashtech Z12;none;B;N;1500;Softwaretest 
