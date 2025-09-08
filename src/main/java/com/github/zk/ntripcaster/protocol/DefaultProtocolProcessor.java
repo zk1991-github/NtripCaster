@@ -1,6 +1,5 @@
 package com.github.zk.ntripcaster.protocol;
 
-import com.github.zk.ntripcaster.enums.ResponseCodeV2Enum;
 import com.github.zk.ntripcaster.util.SystemUtil;
 import org.springframework.stereotype.Component;
 

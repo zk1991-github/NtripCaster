@@ -2,8 +2,6 @@ package com.github.zk.ntripcaster.protocol;
 
 import com.github.zk.ntripcaster.enums.ResponseCodeV2Enum;
 import com.github.zk.ntripcaster.util.TimeUtil;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Ntrip 2.0 获取数据响应结构
