@@ -1,10 +1,10 @@
 package com.github.zk.ntripcaster.protocol;
 
+import com.github.zk.ntripcaster.enums.ResponseCodeV2Enum;
 import com.github.zk.ntripcaster.util.SystemUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ import java.io.IOException;
  * @since 1.0
  */
 @Component
-public class DefaultSourceTableProcessor extends SourceTableProcessor {
+public class DefaultProtocolProcessor extends AbstractProtocolProcessor {
 
     private final String SOURCE_TABLE_PATH = SystemUtil.ntripConfigPath() + "sourceTable.txt";
 
@@ -38,4 +38,5 @@ public class DefaultSourceTableProcessor extends SourceTableProcessor {
             throw new RuntimeException(e);
         }
     }
+
 }

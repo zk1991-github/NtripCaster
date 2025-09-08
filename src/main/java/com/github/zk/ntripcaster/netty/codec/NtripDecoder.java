@@ -49,17 +49,26 @@ public class NtripDecoder extends ByteToMessageDecoder {
                 return;
             }
             String method = parts[0];
-            String mountpointUri = parts[1];
-            String mountpoint = mountpointUri.startsWith("/") ? mountpointUri.substring(1) : mountpointUri;
-            // 循环其他行，找到 Authorization
             String authorization = null;
-            for (int i = 1; i < lines.length; i++) {
-                String line = lines[i];
-                if (line.startsWith("Authorization")) {
-                    // 例 ： Authorization: Basic bnRyaXA6c2VjcmV0
-                    authorization = line.split(":")[1].split("\\s+")[2];
+            String mountpoint = null;
+            if ("GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+                String mountpointUri = parts[1];
+                mountpoint = mountpointUri.startsWith("/") ? mountpointUri.substring(1) : mountpointUri;
+                // 循环其他行，找到 Authorization
+                for (int i = 1; i < lines.length; i++) {
+                    String line = lines[i];
+
+                    if (line.startsWith("Authorization")) {
+                        // 例 ： Authorization: Basic bnRyaXA6c2VjcmV0
+                        authorization = line.split(":")[1].split("\\s+")[2];
+                    }
                 }
+            } else {
+                String mountpointUri = parts[2];
+                mountpoint = mountpointUri.startsWith("/") ? mountpointUri.substring(1) : mountpointUri;
+                authorization = parts[1];
             }
+
             out.add(new NtripRequest(method, mountpoint, authorization));
             // 循环继续，可能还有下一个HTTP头
         }

@@ -1,14 +1,15 @@
 package com.github.zk.ntripcaster.netty.handler;
 
 import com.github.zk.ntripcaster.enums.ResponseCodeV1Enum;
+import com.github.zk.ntripcaster.enums.ResponseCodeV2Enum;
 import com.github.zk.ntripcaster.model.NtripRequest;
-import com.github.zk.ntripcaster.protocol.SourceTableProcessor;
+import com.github.zk.ntripcaster.protocol.AbstractProtocolProcessor;
+import com.github.zk.ntripcaster.protocol.DefaultProtocolProcessor;
 import com.github.zk.ntripcaster.topic.NtripTopicManager;
 import com.github.zk.ntripcaster.util.Base64Util;
 import com.github.zk.ntripcaster.util.SystemUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
@@ -21,9 +22,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Ntrip Caster 的核心业务处理器
@@ -41,7 +39,7 @@ public class NtripServerHandler extends ChannelInboundHandlerAdapter {
     private final Logger logger = LoggerFactory.getLogger(NtripServerHandler.class);
 
     private final NtripTopicManager ntripTopicManager;
-    private final SourceTableProcessor sourceTableProcessor;
+    private AbstractProtocolProcessor protocolProcessor = new DefaultProtocolProcessor();
 
     /**
      * 标记当前连接是否已经注册为一个NtripServer(数据源).
@@ -49,9 +47,9 @@ public class NtripServerHandler extends ChannelInboundHandlerAdapter {
      */
     private boolean isNtripServerRegistered = false;
 
-    public NtripServerHandler(NtripTopicManager ntripTopicManager, SourceTableProcessor sourceTableProcessor) {
+    public NtripServerHandler(NtripTopicManager ntripTopicManager, AbstractProtocolProcessor protocolProcessor) {
         this.ntripTopicManager = ntripTopicManager;
-        this.sourceTableProcessor = sourceTableProcessor;
+        this.protocolProcessor = protocolProcessor;
     }
 
     @Override
@@ -104,19 +102,30 @@ public class NtripServerHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.UNAUTHORIZED.getText(), StandardCharsets.UTF_8));
                 }
             }
+            return;
         }
 
         // NtripServer (数据源) 注册
-        if ("SOURCE".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method)) {
+        if ("SOURCE".equalsIgnoreCase(method)) {
             // 验证用户
             if (!ObjectUtils.isEmpty(authorization) && validatePassword(authorization)) {
                 ntripTopicManager.registerNtripServer(mountPoint, ctx.channel());
                 // 标记此连接为已注册的NtripServer
                 this.isNtripServerRegistered = true;
                 ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.OK.getText(), StandardCharsets.UTF_8));
-                logger.info("NtripServer {} 注册到主题: {}", ctx.channel().remoteAddress(), mountPoint);
+                logger.info("NtripServer1.0 {} 注册到主题: {}", ctx.channel().remoteAddress(), mountPoint);
             } else {
                 ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.UNAUTHORIZED.getText(), StandardCharsets.UTF_8));
+            }
+        } else if ("POST".equalsIgnoreCase(method)) {
+            if (!ObjectUtils.isEmpty(authorization) && validatePassword(authorization)) {
+                ntripTopicManager.registerNtripServer(mountPoint, ctx.channel());
+                // 标记此连接为已注册的NtripServer
+                this.isNtripServerRegistered = true;
+                ctx.writeAndFlush(Unpooled.copiedBuffer(protocolProcessor.buildGetDataV2Response(ResponseCodeV2Enum.OK), StandardCharsets.UTF_8));
+                logger.info("NtripServer1.0 {} 注册到主题: {}", ctx.channel().remoteAddress(), mountPoint);
+            } else {
+                ctx.writeAndFlush(Unpooled.copiedBuffer(protocolProcessor.buildGetDataV2Response(ResponseCodeV2Enum.UNAUTHORIZED), StandardCharsets.UTF_8));
             }
         } else {
             // 未知的请求方法
@@ -145,7 +154,7 @@ public class NtripServerHandler extends ChannelInboundHandlerAdapter {
 
     private void handleSourceTableRequest(ChannelHandlerContext ctx) {
         logger.info("NtripClient {} 请求SourceTable", ctx.channel().remoteAddress());
-        String sourceTable = sourceTableProcessor.bulidSourceTable();
+        String sourceTable = protocolProcessor.bulidSourceTable();
         // 发送数据后关闭连接,这是SourceTable请求的典型处理方式
         ctx.writeAndFlush(Unpooled.copiedBuffer(sourceTable, StandardCharsets.US_ASCII));
     }

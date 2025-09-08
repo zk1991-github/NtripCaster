@@ -2,6 +2,7 @@ package com.github.zk.ntripcaster.protocol;
 
 import com.github.zk.ntripcaster.enums.ResponseCodeV1Enum;
 import com.github.zk.ntripcaster.enums.ResponseCodeV2Enum;
+import com.github.zk.ntripcaster.util.TimeUtil;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -105,7 +106,7 @@ public class SourceTableHead {
         }
 
         public SourceTableBuidler date() {
-            this.date = currentTime();
+            this.date = TimeUtil.currentTime();
             return this;
         }
 
@@ -144,35 +145,13 @@ public class SourceTableHead {
                             ResponseCodeV2Enum.OK.getText());
             this.ntripVersion = "Ntrip/2.0";
             this.server = " NTRIP ExampleCaster/2.0";
-            this.date = currentTime();
+            this.date = TimeUtil.currentTime();
             this.connection = "close";
             this.contentType = "gnss/sourcetable";
             this.contentLength = data.length();
             this.data = data;
             this.end = "ENDSOURCETABLE";
             return new SourceTableHead(this);
-        }
-
-        /**
-         * 当前时间
-         *
-         * @return 当前时间字符串
-         */
-        private String currentTime() {
-            // 获取当前的日期和时间
-            ZonedDateTime dateTime = ZonedDateTime.now(ZoneOffset.UTC);
-
-            // 创建一个DateTimeFormatter实例，设置日期格式
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
-                            .withZone(ZoneOffset.UTC);
-
-            // 格式化当前时间
-            String formattedDate = formatter.format(dateTime);
-
-            // 替换Z为GMT
-            formattedDate = formattedDate.replace("Z", "GMT");
-            return formattedDate;
         }
     }
 
