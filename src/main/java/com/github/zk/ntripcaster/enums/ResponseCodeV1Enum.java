@@ -9,6 +9,8 @@ package com.github.zk.ntripcaster.enums;
 public enum ResponseCodeV1Enum {
     //正常值
     OK("ICY 200 OK\r\n"),
+
+    SOURCETABLE("200 OK\r\n"),
     //密码错误
     UNAUTHORIZED("ERROR - Bad Password\r\n"),
     //挂载点已占用

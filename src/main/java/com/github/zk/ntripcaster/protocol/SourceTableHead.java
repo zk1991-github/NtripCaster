@@ -82,7 +82,8 @@ public class SourceTableHead {
         private String end;
 
         public SourceTableBuidler(ResponseCodeV1Enum v1Enum) {
-            this.firstLine = v1Enum.getText();
+            this.firstLine = String.join(" ",
+                    "SOURCETABLE", v1Enum.getText());
         }
 
         public SourceTableBuidler(ResponseCodeV2Enum v2Enum) {
@@ -134,10 +135,6 @@ public class SourceTableHead {
         }
 
         public SourceTableHead defaultSourceTableBuild(String data) {
-            this.firstLine =
-                    String.join(" ", "HTTP/1.1",
-                            String.valueOf(ResponseCodeV2Enum.OK.getCode()),
-                            ResponseCodeV2Enum.OK.getText());
             this.ntripVersion = "Ntrip/2.0";
             this.server = " NTRIP ExampleCaster/2.0";
             this.date = TimeUtil.currentTime();
