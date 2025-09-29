@@ -84,9 +84,10 @@ public class NtripDecoder extends ByteToMessageDecoder {
     /**
      * 在ByteBuf(haystack)中查找byte[](needle)的索引.
      * 这个实现是健壮的,能够处理TCP流分片导致的分次解码.
+     *
      * @param haystack 待搜索的ByteBuf
      * @param needle   要查找的字节数组
-     * @return 找到则返回起始索引,否则返回-1.
+     * @return 找到则返回起始索引, 否则返回-1.
      */
     private static int indexOf(ByteBuf haystack, byte[] needle) {
         for (int i = haystack.readerIndex(); i <= haystack.writerIndex() - needle.length; i++) {

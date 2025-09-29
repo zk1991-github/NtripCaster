@@ -1,6 +1,8 @@
 package com.github.zk.ntripcaster.topic;
 
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.concurrent.SubmissionPublisher;
  */
 @Component
 public class NtripTopicManager {
+
+    private final Logger logger = LoggerFactory.getLogger(NtripTopicManager.class);
 
     // K: topic(mountPoint), V: 该topic的数据发布者
     private final ConcurrentHashMap<String, SubmissionPublisher<byte[]>> topics = new ConcurrentHashMap<>();
@@ -45,7 +49,7 @@ public class NtripTopicManager {
 
         // 订阅
         publisher.subscribe(subscriber);
-        System.out.println("NtripClient " + channel.remoteAddress() + " subscribed to topic: " + topic);
+        logger.info("NtripClient {} subscribed to topic: {}", channel.remoteAddress(), topic);
     }
 
     /**
@@ -57,7 +61,7 @@ public class NtripTopicManager {
      */
     public void registerNtripServer(String topic, Channel channel) {
         ntripServerChannelToTopic.put(channel, topic);
-        System.out.println("NtripServer " + channel.remoteAddress() + " registered for topic: " + topic);
+        logger.info("NtripServer {} registered for topic: {}", channel.remoteAddress(), topic);
     }
 
     /**
@@ -88,14 +92,14 @@ public class NtripTopicManager {
             for (NtripClientSubscriber subscriber : subscribers) {
                 subscriber.cancel();
             }
-            System.out.println("NtripClient " + channel.remoteAddress() + " unsubscribed from all topics.");
+            logger.info("NtripClient {} unsubscribed from all topics.", channel.remoteAddress());
             return;
         }
 
         // 尝试作为NtripServer(数据源)清理
         String topic = ntripServerChannelToTopic.remove(channel);
         if (topic != null) {
-            System.out.println("NtripServer " + channel.remoteAddress() + " disconnected from topic: " + topic);
+            logger.info("NtripServer {} disconnected from topic: {}", channel.remoteAddress(), topic);
             // 可选: 当一个挂载点的所有NtripServer都断开时,可以关闭这个Publisher
             // 这里我们暂时不关闭,因为可能还有其他NtripServer在发布相同挂载点,或者为了NtripClient可以持续等待
             // SubmissionPublisher<byte[]> publisher = topics.get(topic);

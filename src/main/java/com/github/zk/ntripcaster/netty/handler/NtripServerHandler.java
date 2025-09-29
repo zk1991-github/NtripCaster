@@ -142,7 +142,7 @@ public class NtripServerHandler extends ChannelInboundHandlerAdapter {
 
     private void handleSubscriptionRequest(ChannelHandlerContext ctx, String mountPoint) {
         ntripTopicManager.subscribe(mountPoint, ctx.channel());
-        ctx.writeAndFlush(Unpooled.copiedBuffer("ICY 200 OK\r\n\r\n", StandardCharsets.UTF_8));
+        ctx.writeAndFlush(Unpooled.copiedBuffer(ResponseCodeV1Enum.OK.getText(), StandardCharsets.UTF_8));
         logger.info("NtripClient {} 订阅主题: {}", ctx.channel().remoteAddress(), mountPoint);
     }
 
